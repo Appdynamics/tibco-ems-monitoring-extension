@@ -1,0 +1,58 @@
+#########
+## If you are using SSL to connect to EMS, make sure you also set the following:
+##
+## sslIdentityFile: path to the private key and client certificate file (example: conf/client_identity.p12)
+## sslIdentityPassword: password to decrypt the private key
+## sslTrustedCerts: path to the server certificate file (example: conf/server_cert.pem)
+##########
+emsServers:
+   # Keep the display name blank if Tibco EMS Extension is monitoring only one Tibco Server. 
+   - displayName: "Local EMS"
+     host: "192.168.1.9"
+     port: 7222
+     # Supports tcp and ssl
+     protocol: "tcp"
+     user: "admin"
+     # password or encryptedPassword and encryptionKey are required
+     password: ""
+     encryptedPassword:
+     encryptionKey:
+     collectConnections: true
+     collectDurables: true
+     collectRoutes: true
+     collectConsumers: true
+     collectProducers: true
+     collectQueues: true
+     collectTopics: true
+     #config to show temp queues and topics
+     showTemp: false
+     #config to show system queues and topics
+     showSystem: false
+     includeQueues: []
+     excludeQueues: ["satish1"]
+     includeTopics: ["satish"]
+     excludeTopics: []
+     includeDurables: []
+     excludeDurables: []
+     includeRoutes: []
+     excludeRoutes: []
+     sslIdentityFile:
+     sslIdentityPassword:
+     sslIdentityEncryptedPassword:
+     sslTrustedCerts:
+     #ssl config optional settings
+     sslDebug:
+     sslVerifyHost:
+     sslVerifyHostName:
+     sslVendor:
+
+
+# number of concurrent tasks
+numberOfThreads: 1
+
+#This will create this metric in all the tiers, under this path. Please make sure to have a trailing |
+#metricPrefix: "Custom Metrics|Tibco EMS|"
+
+#This will create it in specific Tier aka Component. Replace <COMPONENT_ID>. Please make sure to have a trailing |.
+#To find out the COMPONENT_ID, please see the screen shot here https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
+metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"

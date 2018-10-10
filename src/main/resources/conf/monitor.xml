@@ -1,0 +1,32 @@
+<!--
+  ~ Copyright 2018. AppDynamics LLC and its affiliates.
+  ~ All Rights Reserved.
+  ~ This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+  ~ The copyright notice above does not evidence any actual or intended publication of such source code.
+  ~
+  -->
+
+<monitor>
+    <name>TibcoEMSMonitorMonitor</name>
+    <type>managed</type>
+    <description>Monitors Tibco EMS</description>
+    <monitor-configuration>
+    </monitor-configuration>
+    <monitor-run-task>
+        <type>java</type>
+        <name>Tibco EMS Monitor Run Task</name>
+        <display-name>Tibco EMS Monitor Task</display-name>
+        <description>Tibco EMS Task</description>
+        <execution-style>periodic</execution-style>
+        <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
+        <execution-timeout-in-secs>60</execution-timeout-in-secs>
+
+        <task-arguments>
+            <argument name="config-file" is-required="true" default-value="monitors/TibcoEMSMonitor/config.yml"/>
+        </task-arguments>
+        <java-task>
+            <classpath>tibcoems-monitoring-extension.jar;lib/tibcrypt.jar;lib/tibemsd_sec.jar;lib/tibjms.jar;lib/tibjmsadmin.jar;lib/tibjmsapps.jar;lib/tibjmsufo.jar;lib/tibrvjms.jar</classpath>
+            <impl-class>com.appdynamics.extensions.tibco.TibcoEMSMonitor</impl-class>
+        </java-task>
+    </monitor-run-task>
+</monitor>
