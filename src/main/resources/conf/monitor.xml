@@ -1,13 +1,5 @@
-<!--
-  ~ Copyright 2018. AppDynamics LLC and its affiliates.
-  ~ All Rights Reserved.
-  ~ This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
-  ~ The copyright notice above does not evidence any actual or intended publication of such source code.
-  ~
-  -->
-
 <monitor>
-    <name>TibcoEMSMonitorMonitor</name>
+    <name>TibcoEMSMonitor</name>
     <type>managed</type>
     <description>Monitors Tibco EMS</description>
     <monitor-configuration>
@@ -23,6 +15,7 @@
 
         <task-arguments>
             <argument name="config-file" is-required="true" default-value="monitors/TibcoEMSMonitor/config.yml"/>
+            <argument name="metric-file" is-required="true" default-value="monitors/TibcoEMSMonitor/metrics.xml"/>
         </task-arguments>
         <java-task>
             <classpath>tibcoems-monitoring-extension.jar;lib/tibcrypt.jar;lib/tibemsd_sec.jar;lib/tibjms.jar;lib/tibjmsadmin.jar;lib/tibjmsapps.jar;lib/tibjmsufo.jar;lib/tibrvjms.jar</classpath>
