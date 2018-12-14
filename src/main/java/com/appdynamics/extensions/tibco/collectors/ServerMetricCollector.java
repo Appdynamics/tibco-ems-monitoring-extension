@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.metrics.Metric;
@@ -24,7 +32,7 @@ public class ServerMetricCollector extends AbstractMetricCollector {
 
     public ServerMetricCollector(TibjmsAdmin conn, boolean showSystem,
                                  boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics) {
-        super(conn, null, null, showSystem, showTemp, metrics, metricPrefix);
+        super(conn, null, showSystem, showTemp, metrics, metricPrefix);
         this.phaser = phaser;
         this.phaser.register();
         this.collectedMetrics = collectedMetrics;

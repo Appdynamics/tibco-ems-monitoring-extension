@@ -15,7 +15,6 @@ import com.appdynamics.extensions.TaskInputArgs;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.crypto.CryptoUtil;
-import com.appdynamics.extensions.tibco.collectors.ConnectionMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ConsumerMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.DurableMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ProducerMetricCollector;
@@ -33,6 +32,7 @@ import com.tibco.tibjms.admin.TibjmsAdminException;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -95,8 +95,6 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
                 return ROUTE;
             } else if (DURABLE.getType().equalsIgnoreCase(type)) {
                 return DURABLE;
-            } else if (CONNECTION.getType().equalsIgnoreCase(type)) {
-                return CONNECTION;
             }
 
             logger.error("Invalid type [ " + type + " ] specified");
@@ -198,41 +196,29 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
         boolean showTemp = emsMetrics.isShowTemp();
         boolean showSystem = emsMetrics.isShowSystem();
         List<String> includeQueues = (List) emsServer.get("includeQueues");
-        List<String> excludeQueues = (List) emsServer.get("excludeQueues");
 
         List<String> includeTopics = (List) emsServer.get("includeTopics");
-        List<String> excludeTopics = (List) emsServer.get("excludeTopics");
 
         List<String> includeDurables = (List) emsServer.get("includeDurables");
-        List<String> excludeDurables = (List) emsServer.get("excludeDurables");
 
         List<String> includeRoutes = (List) emsServer.get("includeRoutes");
-        List<String> excludeRoutes = (List) emsServer.get("excludeRoutes");
 
         List<String> includeProducers = (List) emsServer.get("includeProducers");
-        List<String> excludeProducers = (List) emsServer.get("excludeProducers");
 
         List<String> includeConsumers = (List) emsServer.get("includeConsumers");
-        List<String> excludeConsumers = (List) emsServer.get("excludeConsumers");
 
 
         List<Pattern> includeQueuesPatterns = buildPattern(includeQueues);
-        List<Pattern> excludeQueuePatterns = buildPattern(excludeQueues);
 
         List<Pattern> includeTopicsPatterns = buildPattern(includeTopics);
-        List<Pattern> excludeTopicPatterns = buildPattern(excludeTopics);
 
         List<Pattern> includeDurablesPatterns = buildPattern(includeDurables);
-        List<Pattern> excludeDurablesPatterns = buildPattern(excludeDurables);
 
         List<Pattern> includeRoutesPatterns = buildPattern(includeRoutes);
-        List<Pattern> excludeRoutesPatterns = buildPattern(excludeRoutes);
 
         List<Pattern> includeProducersPatterns = buildPattern(includeProducers);
-        List<Pattern> excludeProducersPatterns = buildPattern(excludeProducers);
 
         List<Pattern> includeConsumersPatterns = buildPattern(includeConsumers);
-        List<Pattern> excludeConsumersPatterns = buildPattern(excludeConsumers);
 
 
         List<com.appdynamics.extensions.metrics.Metric> collectedMetrics = new ArrayList<>();
@@ -253,6 +239,11 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
             //Register for this task
             phaser.register();
             Metrics[] allMetrics = emsMetrics.getMetrics();
+
+            Map<String, String> queueTopicMetricPrefixes = getQueueTopicMetricPrefixes(allMetrics);
+
+            Boolean displayDynamicIdsInMetricPath = (Boolean) configuration.getConfigYml().get("displayDynamicIdsInMetricPath");
+
             for (Metrics metrics : allMetrics) {
 
                 String type = metrics.getType();
@@ -265,32 +256,28 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
                             configuration.getContext().getExecutorService().execute(displayName + ": ServerMetricCollector", serverMetricCollector);
                             break;
                         case QUEUE:
-                            QueueMetricCollector queueMetricCollector = new QueueMetricCollector(tibjmsAdmin, includeQueuesPatterns, excludeQueuePatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
+                            QueueMetricCollector queueMetricCollector = new QueueMetricCollector(tibjmsAdmin, includeQueuesPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
                             configuration.getContext().getExecutorService().execute(displayName + ": QueueMetricCollector", queueMetricCollector);
                             break;
                         case TOPIC:
-                            TopicMetricCollector topicMetricCollector = new TopicMetricCollector(tibjmsAdmin, includeTopicsPatterns, excludeTopicPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
+                            TopicMetricCollector topicMetricCollector = new TopicMetricCollector(tibjmsAdmin, includeTopicsPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
                             configuration.getContext().getExecutorService().execute(displayName + ": TopicMetricCollector", topicMetricCollector);
                             break;
                         case PRODUCER:
-                            ProducerMetricCollector producerMetricCollector = new ProducerMetricCollector(tibjmsAdmin, includeProducersPatterns, excludeProducersPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
+                            ProducerMetricCollector producerMetricCollector = new ProducerMetricCollector(tibjmsAdmin, includeProducersPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics, queueTopicMetricPrefixes, displayDynamicIdsInMetricPath);
                             configuration.getContext().getExecutorService().execute(displayName + ": ProducerMetricCollector", producerMetricCollector);
                             break;
                         case CONSUMER:
-                            ConsumerMetricCollector consumerMetricCollector = new ConsumerMetricCollector(tibjmsAdmin, includeConsumersPatterns, excludeConsumersPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
+                            ConsumerMetricCollector consumerMetricCollector = new ConsumerMetricCollector(tibjmsAdmin, includeConsumersPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics, queueTopicMetricPrefixes, displayDynamicIdsInMetricPath);
                             configuration.getContext().getExecutorService().execute(displayName + ": ConsumerMetricCollector", consumerMetricCollector);
                             break;
                         case ROUTE:
-                            RouteMetricCollector routeMetricCollector = new RouteMetricCollector(tibjmsAdmin, includeRoutesPatterns, excludeRoutesPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
+                            RouteMetricCollector routeMetricCollector = new RouteMetricCollector(tibjmsAdmin, includeRoutesPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
                             configuration.getContext().getExecutorService().execute(displayName + ": RouteMetricCollector", routeMetricCollector);
                             break;
                         case DURABLE:
-                            DurableMetricCollector durableMetricCollector = new DurableMetricCollector(tibjmsAdmin, includeDurablesPatterns, excludeDurablesPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
+                            DurableMetricCollector durableMetricCollector = new DurableMetricCollector(tibjmsAdmin, includeDurablesPatterns, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics, queueTopicMetricPrefixes);
                             configuration.getContext().getExecutorService().execute(displayName + ": DurableMetricCollector", durableMetricCollector);
-                            break;
-                        case CONNECTION:
-                            ConnectionMetricCollector connectionMetricCollector = new ConnectionMetricCollector(tibjmsAdmin, showSystem, showTemp, metrics, fullMetricPrefix, phaser, collectedMetrics);
-                            configuration.getContext().getExecutorService().execute(displayName + ": ConnectionMetricCollector", connectionMetricCollector);
                             break;
                     }
                 }
@@ -317,6 +304,18 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
             logger.debug("Printing {} metrics", collectedMetrics.size());
             metricWriteHelper.transformAndPrintMetrics(collectedMetrics);
         }
+    }
+
+    private Map<String, String> getQueueTopicMetricPrefixes(Metrics[] allMetrics) {
+        Map<String, String> queueTopicMetrics = new HashMap<>();
+        for (Metrics metrics : allMetrics) {
+            if (DestinationType.QUEUE.getType().equals(metrics.getType())) {
+                queueTopicMetrics.put(DestinationType.QUEUE.getType(), metrics.getMetricPrefix());
+            } else if (DestinationType.TOPIC.getType().equals(metrics.getType())) {
+                queueTopicMetrics.put(DestinationType.TOPIC.getType(), metrics.getMetricPrefix());
+            }
+        }
+        return queueTopicMetrics;
     }
 
     private String refine(String metricPrefix) {

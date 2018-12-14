@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
@@ -24,14 +32,16 @@ public class DurableMetricCollector extends AbstractMetricCollector {
     private static final Logger logger = Logger.getLogger(DurableMetricCollector.class);
     private final Phaser phaser;
     private List<com.appdynamics.extensions.metrics.Metric> collectedMetrics;
+    private Map<String, String> queueTopicMetricPrefixes;
 
 
-    public DurableMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, List<Pattern> excludePatterns, boolean showSystem,
-                                  boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics) {
-        super(conn, includePatterns, excludePatterns, showSystem, showTemp, metrics, metricPrefix);
+    public DurableMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, boolean showSystem,
+                                  boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics, Map<String, String> queueTopicMetricPrefixes) {
+        super(conn, includePatterns, showSystem, showTemp, metrics, metricPrefix);
         this.phaser = phaser;
         this.phaser.register();
         this.collectedMetrics = collectedMetrics;
+        this.queueTopicMetricPrefixes = queueTopicMetricPrefixes;
     }
 
     public void run() {
@@ -47,7 +57,7 @@ public class DurableMetricCollector extends AbstractMetricCollector {
                 logger.warn("Unable to get durable metrics");
             } else {
                 for (DurableInfo durableInfo : durables) {
-                    if (shouldMonitorDestination(durableInfo.getDurableName(), includePatterns, excludePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.DURABLE, logger)) {
+                    if (shouldMonitorDestination(durableInfo.getDurableName(), includePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.DURABLE, logger)) {
                         logger.info("Publishing metrics for durable " + durableInfo.getDurableName());
                         List<com.appdynamics.extensions.metrics.Metric> durableInfoMetrics = getDurableInfo(durableInfo, metrics);
                         collectedMetrics.addAll(durableInfoMetrics);
@@ -75,6 +85,19 @@ public class DurableMetricCollector extends AbstractMetricCollector {
             prefix = thisPrefix + "|" + durableInfo.getDurableName();
         }
 
+        String topicPrefix = queueTopicMetricPrefixes.get(TibcoEMSMetricFetcher.DestinationType.TOPIC.getType());
+
+        String topicName = durableInfo.getTopicName();
+
+        String destinationPrefix;
+        if (Strings.isNullOrEmpty(topicPrefix)) {
+            destinationPrefix = "Topics|"+topicName+"|";
+        } else {
+            destinationPrefix = topicPrefix + "|"+topicName+"|";
+        }
+
+        destinationPrefix += prefix;
+
         Metric[] durableMetrics = metrics.getMetrics();
 
         for (Metric metric : durableMetrics) {
@@ -99,8 +122,8 @@ public class DurableMetricCollector extends AbstractMetricCollector {
 
             StringBuilder sb = new StringBuilder(metricPrefix);
             sb.append("|");
-            if (!Strings.isNullOrEmpty(prefix)) {
-                sb.append(prefix).append("|");
+            if (!Strings.isNullOrEmpty(destinationPrefix)) {
+                sb.append(destinationPrefix).append("|");
             }
             sb.append(name);
 

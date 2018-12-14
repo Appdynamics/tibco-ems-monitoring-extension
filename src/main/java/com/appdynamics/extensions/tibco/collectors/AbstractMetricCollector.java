@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
@@ -17,7 +25,6 @@ public abstract class AbstractMetricCollector implements Runnable {
 
     TibjmsAdmin conn;
     List<Pattern> includePatterns;
-    List<Pattern> excludePatterns;
     boolean showSystem;
     boolean showTemp;
     Metrics metrics;
@@ -26,18 +33,17 @@ public abstract class AbstractMetricCollector implements Runnable {
     protected static ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public AbstractMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, List<Pattern> excludePatterns, boolean showSystem,
+    public AbstractMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, boolean showSystem,
                                    boolean showTemp, Metrics metrics, String metricPrefix) {
         this.conn = conn;
         this.includePatterns = includePatterns;
-        this.excludePatterns = excludePatterns;
         this.showSystem = showSystem;
         this.showTemp = showTemp;
         this.metrics = metrics;
         this.metricPrefix = metricPrefix;
     }
 
-    boolean shouldMonitorDestination(String destName, List<Pattern> patternsToInclude, List<Pattern> patternsToExclude, boolean showSystem, boolean showTemp, TibcoEMSMetricFetcher.DestinationType destinationType, Logger logger) {
+    boolean shouldMonitorDestination(String destName, List<Pattern> patternsToInclude, boolean showSystem, boolean showTemp, TibcoEMSMetricFetcher.DestinationType destinationType, Logger logger) {
 
         logger.debug("Checking includes and excludes for " + destinationType.getType() + " with name " + destName);
 
@@ -62,20 +68,6 @@ public abstract class AbstractMetricCollector implements Runnable {
                         return true;
                     }
                 }
-            } else if (patternsToExclude != null && patternsToExclude.size() > 0) {
-                logger.debug("Using patterns to exclude [" + patternsToInclude + "] to filter");
-                for (Pattern patternToExclude : patternsToExclude) {
-                    Matcher matcher = patternToExclude.matcher(destName);
-                    if (matcher.matches()) {
-                        logger.debug(String.format("Skipping '%s' '%s' due to excluded pattern '%s'",
-                                destinationType.getType(), destName, patternToExclude.pattern()));
-                        return false;
-                    }
-                }
-
-                logger.debug(String.format("Including '%s' '%s' due to not excluded by any exclude pattern",
-                        destinationType.getType(), destName));
-                return true;
             }
             return false;
         } catch (Exception e) {

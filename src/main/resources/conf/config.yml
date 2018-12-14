@@ -41,6 +41,10 @@ servers:
 # So, please change the value accordingly(Based on the number of server instances you are monitoring).
 numberOfThreads: 15
 
+#Enabling this will display dynamic ids like ProducerID and Consumer ID in the metric path. But this will also increase the stale metrics as the ids are dynamic and they change continuously.
+#Disbling this will aggregate all the values from the destinations ( Producers, Consumers ) and print that value to the controller
+displayDynamicIdsInMetricPath: false
+
 #This will create this metric in all the tiers, under this path. Please make sure to have a trailing |
 #metricPrefix: "Custom Metrics|Tibco EMS|"
 

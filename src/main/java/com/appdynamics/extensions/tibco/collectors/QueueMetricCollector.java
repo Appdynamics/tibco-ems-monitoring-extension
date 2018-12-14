@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
@@ -26,9 +34,9 @@ public class QueueMetricCollector extends AbstractMetricCollector {
     private List<com.appdynamics.extensions.metrics.Metric> collectedMetrics;
 
 
-    public QueueMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, List<Pattern> excludePatterns, boolean showSystem,
+    public QueueMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, boolean showSystem,
                                 boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics) {
-        super(conn, includePatterns, excludePatterns, showSystem, showTemp, metrics, metricPrefix);
+        super(conn, includePatterns, showSystem, showTemp, metrics, metricPrefix);
         this.phaser = phaser;
         this.phaser.register();
         this.collectedMetrics = collectedMetrics;
@@ -47,7 +55,7 @@ public class QueueMetricCollector extends AbstractMetricCollector {
                 logger.warn("Unable to get queue statistics");
             } else {
                 for (QueueInfo queueInfo : queueInfos) {
-                    if (shouldMonitorDestination(queueInfo.getName(), includePatterns, excludePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.QUEUE, logger)) {
+                    if (shouldMonitorDestination(queueInfo.getName(), includePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.QUEUE, logger)) {
                         logger.info("Publishing metrics for queue " + queueInfo.getName());
                         List<com.appdynamics.extensions.metrics.Metric> queueInfoMetrics = getQueueInfo(queueInfo, metrics);
                         collectedMetrics.addAll(queueInfoMetrics);

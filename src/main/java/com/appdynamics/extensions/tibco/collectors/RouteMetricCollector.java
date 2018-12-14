@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
@@ -26,9 +34,9 @@ public class RouteMetricCollector extends AbstractMetricCollector {
     private List<com.appdynamics.extensions.metrics.Metric> collectedMetrics;
 
 
-    public RouteMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, List<Pattern> excludePatterns, boolean showSystem,
+    public RouteMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, boolean showSystem,
                                 boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics) {
-        super(conn, includePatterns, excludePatterns, showSystem, showTemp, metrics, metricPrefix);
+        super(conn, includePatterns, showSystem, showTemp, metrics, metricPrefix);
         this.phaser = phaser;
         this.phaser.register();
         this.collectedMetrics = collectedMetrics;
@@ -47,7 +55,7 @@ public class RouteMetricCollector extends AbstractMetricCollector {
                 logger.warn("Unable to get route metrics");
             } else {
                 for (RouteInfo routeInfo : routes) {
-                    if (shouldMonitorDestination(routeInfo.getName(), includePatterns, excludePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.ROUTE, logger)) {
+                    if (shouldMonitorDestination(routeInfo.getName(), includePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.ROUTE, logger)) {
                         logger.info("Publishing metrics for route " + routeInfo.getName());
                         List<com.appdynamics.extensions.metrics.Metric> routeInfoMetrics = getRouteInfo(routeInfo, metrics);
                         collectedMetrics.addAll(routeInfoMetrics);

@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
@@ -24,14 +32,18 @@ public class ProducerMetricCollector extends AbstractMetricCollector {
     private static final Logger logger = Logger.getLogger(ProducerMetricCollector.class);
     private final Phaser phaser;
     private List<com.appdynamics.extensions.metrics.Metric> collectedMetrics;
+    private Map<String, String> queueTopicMetricPrefixes;
+    private Boolean displayDynamicIdsInMetricPath;
 
 
-    public ProducerMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, List<Pattern> excludePatterns, boolean showSystem,
-                                   boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics) {
-        super(conn, includePatterns, excludePatterns, showSystem, showTemp, metrics, metricPrefix);
+    public ProducerMetricCollector(TibjmsAdmin conn, List<Pattern> includePatterns, boolean showSystem,
+                                   boolean showTemp, Metrics metrics, String metricPrefix, Phaser phaser, List<com.appdynamics.extensions.metrics.Metric> collectedMetrics, Map<String, String> queueTopicMetricPrefixes, Boolean displayDynamicIdsInMetricPath) {
+        super(conn, includePatterns, showSystem, showTemp, metrics, metricPrefix);
         this.phaser = phaser;
         this.phaser.register();
         this.collectedMetrics = collectedMetrics;
+        this.queueTopicMetricPrefixes = queueTopicMetricPrefixes;
+        this.displayDynamicIdsInMetricPath = displayDynamicIdsInMetricPath;
     }
 
     public void run() {
@@ -54,7 +66,7 @@ public class ProducerMetricCollector extends AbstractMetricCollector {
 
                 String destinationName = producerInfo.getDestinationName();
 
-                if (shouldMonitorDestination(destinationName, includePatterns, excludePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.PRODUCER, logger)) {
+                if (shouldMonitorDestination(destinationName, includePatterns, showSystem, showTemp, TibcoEMSMetricFetcher.DestinationType.PRODUCER, logger)) {
                     logger.info("Publishing metrics for producer " + destinationName);
                     List<com.appdynamics.extensions.metrics.Metric> producerInfoMetrics = getProducerInfo(producerInfo, thisPrefix);
                     collectedMetrics.addAll(producerInfoMetrics);
@@ -75,20 +87,39 @@ public class ProducerMetricCollector extends AbstractMetricCollector {
 
         String prefix;
         if (Strings.isNullOrEmpty(thisPrefix)) {
-            prefix = "Producers|" + producerInfo.getID() + "|";
+            prefix = "Producers|";
         } else {
-            prefix = thisPrefix + "|" + producerInfo.getID() + "|";
+            prefix = thisPrefix + "|";
+        }
+
+        if (displayDynamicIdsInMetricPath) {
+            prefix += producerInfo.getID() + "|";
         }
 
         int destinationType = producerInfo.getDestinationType();
         String destinationName = producerInfo.getDestinationName();
 
+        String destinationPrefix;
         if (destinationType == 2) {
-            prefix += "topic|";
+            String topicPrefix = queueTopicMetricPrefixes.get(TibcoEMSMetricFetcher.DestinationType.TOPIC.getType());
+
+            if (Strings.isNullOrEmpty(topicPrefix)) {
+                destinationPrefix = "Topics|";
+            } else {
+                destinationPrefix = topicPrefix + "|";
+            }
         } else {
-            prefix += "queue|";
+
+            String queuePrefix = queueTopicMetricPrefixes.get(TibcoEMSMetricFetcher.DestinationType.QUEUE.getType());
+
+            if (Strings.isNullOrEmpty(queuePrefix)) {
+                destinationPrefix = "Queues|";
+            } else {
+                destinationPrefix = queuePrefix + "|";
+            }
         }
-        prefix += destinationName;
+        destinationPrefix += destinationName + "|" + prefix;
+
 
         Metric[] producerMetrics = metrics.getMetrics();
 
@@ -99,13 +130,7 @@ public class ProducerMetricCollector extends AbstractMetricCollector {
             String name = metric.getAttr();
             BigDecimal value = null;
 
-            if ("ConnectionID".equalsIgnoreCase(name)) {
-                long connectionID = producerInfo.getConnectionID();
-                value = BigDecimal.valueOf(connectionID);
-            } else if ("SessionID".equalsIgnoreCase(name)) {
-                long sessionID = producerInfo.getSessionID();
-                value = BigDecimal.valueOf(sessionID);
-            } else if ("TotalMessages".equalsIgnoreCase(name) && statistics != null) {
+            if ("TotalMessages".equalsIgnoreCase(name) && statistics != null) {
                 long totalMessages = statistics.getTotalMessages();
                 value = BigDecimal.valueOf(totalMessages);
             } else if ("TotalBytes".equalsIgnoreCase(name) && statistics != null) {
@@ -125,9 +150,12 @@ public class ProducerMetricCollector extends AbstractMetricCollector {
 
             StringBuilder sb = new StringBuilder(metricPrefix);
             sb.append("|");
-            if (!Strings.isNullOrEmpty(prefix)) {
-                sb.append(prefix).append("|");
+            if (!Strings.isNullOrEmpty(destinationPrefix)) {
+                sb.append(destinationPrefix);
             }
+            if(!sb.toString().endsWith("|")){
+                sb.append("|")
+;            }
             sb.append(name);
 
             String fullMetricPath = sb.toString();

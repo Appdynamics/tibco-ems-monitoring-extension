@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.tibco;
 
 import static org.mockito.Matchers.any;
@@ -11,7 +19,6 @@ import com.appdynamics.extensions.MonitorExecutorService;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorContext;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
-import com.appdynamics.extensions.tibco.collectors.ConnectionMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ConsumerMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.DurableMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ProducerMetricCollector;
@@ -79,8 +86,6 @@ public class TibcoEMSMetricFetcherTest {
     @Mock
     private DurableMetricCollector durableMetricCollector;
 
-    @Mock
-    private ConnectionMetricCollector connectionMetricCollector;
 
     @Mock
     private TibjmsAdmin tibjmsAdmin;
@@ -129,7 +134,6 @@ public class TibcoEMSMetricFetcherTest {
         PowerMockito.whenNew(ConsumerMetricCollector.class).withAnyArguments().thenReturn(consumerMetricCollector);
         PowerMockito.whenNew(RouteMetricCollector.class).withAnyArguments().thenReturn(routeMetricCollector);
         PowerMockito.whenNew(DurableMetricCollector.class).withAnyArguments().thenReturn(durableMetricCollector);
-        PowerMockito.whenNew(ConnectionMetricCollector.class).withAnyArguments().thenReturn(connectionMetricCollector);
 
         //when(serverMetricCollector.run()).then()
 
@@ -143,7 +147,6 @@ public class TibcoEMSMetricFetcherTest {
         verify(consumerMetricCollector, times(1)).run();
         verify(routeMetricCollector, times(1)).run();
         verify(durableMetricCollector, times(1)).run();
-        verify(connectionMetricCollector, times(1)).run();
     }
 
     @Test
@@ -186,7 +189,6 @@ public class TibcoEMSMetricFetcherTest {
         PowerMockito.whenNew(ConsumerMetricCollector.class).withAnyArguments().thenReturn(consumerMetricCollector);
         PowerMockito.whenNew(RouteMetricCollector.class).withAnyArguments().thenReturn(routeMetricCollector);
         PowerMockito.whenNew(DurableMetricCollector.class).withAnyArguments().thenReturn(durableMetricCollector);
-        PowerMockito.whenNew(ConnectionMetricCollector.class).withAnyArguments().thenReturn(connectionMetricCollector);
 
         //when(serverMetricCollector.run()).then()
 
@@ -200,7 +202,6 @@ public class TibcoEMSMetricFetcherTest {
         verify(consumerMetricCollector, times(0)).run();
         verify(routeMetricCollector, times(0)).run();
         verify(durableMetricCollector, times(0)).run();
-        verify(connectionMetricCollector, times(0)).run();
     }
 
     private Metrics[] setupMetrics(String enableServer, String enableQueue, String enableTopic, String enableProducer,

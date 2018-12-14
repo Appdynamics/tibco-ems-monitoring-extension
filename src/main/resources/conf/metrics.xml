@@ -18,30 +18,43 @@ Set delta = true for metric to report per-min data
 
 <emsMetrics showTemp="false" showSystem="false">
     <metrics type="Server" enabled="true">
-        <metric attr="AsyncDBSize" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="ConnectionCount" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="ConsumerCount" aggregationType = "AVERAGE" timeRollUpType = "AVERAGE" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="DiskReadRate" alias="DiskReadRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="AsyncDBSize" aggregationType="OBSERVATION" timeRollUpType="CURRENT"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="ConnectionCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="ConsumerCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="DiskReadRate" alias="DiskReadRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
         <metric attr="DiskWriteRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <metric attr="DurableCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundBytesRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="IsActiveServer" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="MaxConnections" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundBytesRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="IsActiveServer" aggregationType="OBSERVATION" timeRollUpType="CURRENT"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="MaxConnections" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
         <metric attr="MaxMsgMemory" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
         <metric attr="QueueCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <metric attr="ProducerCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <metric attr="SessionCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="StartTime" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="State" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="SyncDBSize" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
+        <metric attr="StartTime" aggregationType="OBSERVATION" timeRollUpType="CURRENT" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="State" aggregationType="OBSERVATION" timeRollUpType="CURRENT" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="SyncDBSize" aggregationType="OBSERVATION" timeRollUpType="CURRENT"
+                clusterRollUpType="COLLECTIVE"/>
         <metric attr="TopicCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <!-- Converting UpTime which reports in milliseconds to hours -->
-        <metric attr="UpTime" multiplier="2.7777777777778E-7" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
+        <metric attr="UpTime" multiplier="2.7777777777778E-7" aggregationType="OBSERVATION" timeRollUpType="CURRENT"
+                clusterRollUpType="COLLECTIVE"/>
 
 
         <!--
@@ -70,14 +83,22 @@ Set delta = true for metric to report per-min data
     </metrics>
     <metrics type="Queue" metricPrefix="Queues" enabled="true">
         <metric attr="ConsumerCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="DeliveredMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundByteRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InTransitCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="DeliveredMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundByteRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InTransitCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
         <metric attr="ReceiverCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
 
 
@@ -93,17 +114,25 @@ Set delta = true for metric to report per-min data
         <metric attr="MaxRedelivery" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
         -->
     </metrics>
-    <metrics type="Topic" metricPrefix="Topics" enabled="false">
-        <metric attr="ActiveDurableCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+    <metrics type="Topic" metricPrefix="Topics" enabled="true">
+        <metric attr="ActiveDurableCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
         <metric attr="ConsumerCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <metric attr="DurableCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="SubscriberCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="SubscriberCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
 
 
         <!--
@@ -117,42 +146,38 @@ Set delta = true for metric to report per-min data
         -->
     </metrics>
     <metrics type="Durable" metricPrefix="Durables" enabled="true">
-        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="PendingMessageSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
     </metrics>
-    <metrics type="Connection" metricPrefix="Connections" enabled="false">
-        <metric attr="SessionCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="ConsumerCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE" />
-        <metric attr="ProducerCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="StartTime" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="UpTime" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-    </metrics>
-    <metrics type="Route" metricPrefix="Routes" enabled="true">
+    <metrics type="Route" metricPrefix="Routes" enabled="false">
         <metric attr="BacklogCount" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <metric attr="BacklogSize" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="InboundTotalMessages" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="IsConnected" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
-        <metric attr="OutboundTotalMessages" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="InboundTotalMessages" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="IsConnected" aggregationType="OBSERVATION" timeRollUpType="CURRENT"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundMessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
+        <metric attr="OutboundTotalMessages" aggregationType="AVERAGE" timeRollUpType="AVERAGE"
+                clusterRollUpType="COLLECTIVE"/>
 
         <!--
         <metric attr="InboundByteRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         <metric attr="OutboundByteRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
         -->
     </metrics>
-    <metrics type="Consumer" metricPrefix="Consumers" enabled="false">
-        <metric attr="ConnectionID" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="SessionID" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="TotalMessages" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="TotalBytes" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="MessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+    <metrics type="Consumer" metricPrefix="Consumers" enabled="true">
+        <metric attr="TotalMessages" aggregationType="SUM" timeRollUpType="CURRENT" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="TotalBytes" aggregationType="SUM" timeRollUpType="CURRENT" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="MessageRate" aggregationType="SUM" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
     </metrics>
-    <metrics type="Producer" metricPrefix="Producers" enabled="false">
-        <metric attr="ConnectionID" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="SessionID" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="TotalMessages" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="TotalBytes" aggregationType = "OBSERVATION" timeRollUpType = "CURRENT" clusterRollUpType = "COLLECTIVE"/>
-        <metric attr="MessageRate" aggregationType="AVERAGE" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
+    <metrics type="Producer" metricPrefix="Producers" enabled="true">
+        <metric attr="TotalMessages" aggregationType="SUM" timeRollUpType="CURRENT" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="TotalBytes" aggregationType="SUM" timeRollUpType="CURRENT" clusterRollUpType="COLLECTIVE"/>
+        <metric attr="MessageRate" aggregationType="SUM" timeRollUpType="AVERAGE" clusterRollUpType="COLLECTIVE"/>
     </metrics>
 </emsMetrics>
