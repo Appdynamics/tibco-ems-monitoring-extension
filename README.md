@@ -4,7 +4,7 @@ TibcoEMSMonitor
 
 ## Introduction
 
-An AppDynamics Machine Agent add-on to report metrics from a Tibco EMS 
+An AppDynamics Machine Agent extensionm to report metrics from a Tibco EMS 
 Server and its queues.
 
 Tibco EMS is messaging middleware that provides persistent queues as well as a 
@@ -74,18 +74,14 @@ directory.
  * protocol - Specify "tcp" to use standard TCP or "ssl" to use SSL. The default is "tcp".
  * user - Administrative user ID for the Tibco admin interface. The default value is "admin". Required.
  * password - Password for the administrative user ID. The default value is an empty password. Required.
- * collectConnections - configuration to collect connection related metrics
- * collectDurables - configuration to collect durables related metrics
- * collectRoutes - configuration to collect routes related metrics
- * collectConsumers - configuration to collect consumer related metrics
- * collectProducers - configuration to collect producer related metrics
- * collectQueues - configuration to collect queues related metrics
- * collectTopics - configuration to collect topics related metrics
- * showTemp - configuration to collect metrics from temp queues
- * showSystem - configuration to collect metrics from system queues
- * excludeQueues - Define queues which you want to exclude
- * excludeTopics - Define topics which you want to exclude
- 
+ * encryptedPassword & encryptionKey - If you want to encrypt the password them provide these two values.
+ * includeQueues - Queues from which metrics should be collected, supports regex. Required, if not provided no Queue metrics will be collected.
+ * includeTopics - Topics from which metrics should be collected, supports regex. Required, if not provided no Topic metrics will be collected.
+ * includeDurables - Durables from which metrics should be collected, supports regex. Required, if not provided no Durable metrics will be collected.
+ * includeRoutes - Routes from which metrics should be collected, supports regex. Required, if not provided no Route metrics will be collected.
+ * includeProducers - Producers from which metrics should be collected, supports regex. Required, if not provided no Producer metrics will be collected.
+ * includeConsumers - Consumers from which metrics should be collected, supports regex. Required, if not provided no Consumer metrics will be collected.
+
  Sample config.yml
  
  ```
@@ -96,64 +92,45 @@ directory.
 ## sslIdentityPassword: password to decrypt the private key
 ## sslTrustedCerts: path to the server certificate file (example: conf/server_cert.pem)
 ##########
-emsServers:
+servers:
+   # Keep the display name blank if Tibco EMS Extension is monitoring only one Tibco Server.
    - displayName: "Local EMS"
-     host: "localhost"
-     port: 7222
+     host: "192.168.1.11"
+     port: "6222"
      # Supports tcp and ssl
      protocol: "tcp"
+     #Add fault Tolerant servers for this server
+     faultTolerantServers: ["192.168.1.11:7222"]
      user: "admin"
      # password or encryptedPassword and encryptionKey are required
-     password:
+     password: "admin"
      encryptedPassword:
      encryptionKey:
-     collectConnections: false
-     collectDurables: false
-     collectRoutes: false
-     collectConsumers: false
-     collectProducers: false
-     collectQueues: true
-     collectTopics: true
-     #config to show temp queues and topics
-     showTemp: false
-     #config to show system queues and topics
-     showSystem: false
-     excludeQueues: []
-     excludeTopics: []
+    #We are going to  remove support for .* in next release. Other regex's are still supported.
+     includeQueues: [".*"]
+     includeTopics: [".*"]
+     includeDurables: [".*"]
+     includeRoutes: [".*"]
+     includeProducers: [".*"]
+     includeConsumers: [".*"]
      sslIdentityFile:
      sslIdentityPassword:
+     sslIdentityEncryptedPassword:
      sslTrustedCerts:
      #ssl config optional settings
      sslDebug:
      sslVerifyHost:
      sslVerifyHostName:
      sslVendor:
-   - displayName: "Remote EMS"
-     host: "localhost"
-     port: 7222
-     # Supports tcp and ssl
-     protocol: "tcp"
-     user: "admin"
-     password:
-     encryptedPassword:
-     encryptionKey:
-     collectConnections: true
-     collectDurables: true
-     collectRoutes: true
-     collectConsumers: true
-     collectProducers: true
-     collectQueues: true
-     collectTopics: true
-     #config to show temp queues and topics
-     showTemp: false
-     #config to show system queues and topics
-     showSystem: false
-     excludeQueues: []
-     excludeTopics: []
 
 
-# number of concurrent tasks
-numberOfThreads: 1
+# Each server instance needs 9 threads, one for the server instance itself, and others for collecting metrics from connection, consumer, durable, producer, queue, route, server and topic.
+# So, please change the value accordingly(Based on the number of server instances you are monitoring).
+numberOfThreads: 15
+
+#Enabling this will display dynamic ids like ProducerID and Consumer ID in the metric path. But this will also increase the stale metrics as the ids are dynamic and they change continuously.
+#Disbling this will aggregate all the values from the destinations ( Producers, Consumers ) and print that value to the controller
+displayDynamicIdsInMetricPath: false
 
 #This will create this metric in all the tiers, under this path. Please make sure to have a trailing |
 #metricPrefix: "Custom Metrics|Tibco EMS|"
@@ -166,16 +143,7 @@ metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"
 
 ## Metrics Provided
 
-### Connection Metrics
-
-| Metric Name        |
-| :----------------- |
-| SessionCount       |
-| ConsumerCount      |
-| ProducerCount      | 
-| StartTime          | 
-| UpTime             |
-
+All the metrics are configured in metrics.xml file. By default extension can collect below metrics from each of the destination. Additional metrics are configured and commented in metrics.xml and user can uncomment them based on their monitoring needs.
 
 ### Durable Metrics
 
@@ -197,8 +165,6 @@ metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"
 
 | Metric Name       |
 | :---------------- |
-| ConnectionID      |
-| SessionID         |
 | TotalMessages     |
 | TotalBytes        |
 | MessageRate       |
@@ -208,54 +174,30 @@ metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"
 | Metric Name                  |
 | :--------------------------- |
 | ConsumerCount                |
+| DeliveredMessageCount        |
+| InboundMessageCount          |
+| InboundByteRate              |
+| InTransitCount               | 
+| OutboundMessageCount         |
+| OutboundMessageRate          |
 | PendingMessageCount          |
 | PendingMessageSize           |
-| FlowControlMaxBytes          |
-| MaxMsgs                      |
-| MaxBytes                     |
-| InboundByteRate              |
-| InboundMessageRate           |
-| InboundByteCount             |
-| InboundMessageCount          |
-| OutboundByteRate             |
-| OutboundMessageRate          |
-| OutboundByteCount            |
-| OutboundMessageCount         |
-| InboundMessagesPerMinute     |
-| OutboundMessagesPerMinute    |
-| InboundBytesPerMinute        |
-| OutboundBytesPerMinute       |
-| InTransitCount               | 
 | ReceiverCount                |
-| MaxRedelivery                |
 
 ### Topic Metrics
 
 | Metric Name                  |
 | :--------------------------- |
+| ActiveDurableCount           |
 | ConsumerCount                |
+| DurableCount                 |
+| InboundMessageCount          |
+| InboundMessageRate           |
+| OutboundMessageCount         |
+| OutboundMessageRate          |
 | PendingMessageCount          |
 | PendingMessageSize           |
-| FlowControlMaxBytes          |
-| MaxMsgs                      |
-| MaxBytes                     |
-| InboundByteRate              |
-| InboundMessageRate           |
-| InboundByteCount             |
-| InboundMessageCount          |
-| OutboundByteRate             |
-| OutboundMessageRate          |
-| OutboundByteCount            |
-| OutboundMessageCount         |
-| InboundMessagesPerMinute     |
-| OutboundMessagesPerMinute    |
-| InboundBytesPerMinute        |
-| OutboundBytesPerMinute       |
-| ConsumerCount                | 
 | SubscriberCount              |
-| ActiveDurableCount           |
-| DurableCount                 |
-
 
 
 ## Caution
@@ -305,14 +247,20 @@ To use the workbench
 For any questions or feature requests, please contact the [AppDynamics Center 
 of Excellence][].
 
-**Version:** 2.4.2
+**Version:** 3.0.0
 **Controller Compatibility:** 3.6 or later  
-**Last Updated:** 23-Feb-2017
+**Last Updated:** 14-Dec-2018
 
 ------------------------------------------------------------------------------
 
 ## Release Notes
 
+### Version 3.0.0
+  - Ported to latest extension commons
+  - Added fault tolerent server configuration
+  - Added configuration to include destinations.
+  - Added configuration to add/remove metrics in metrics.xml
+  - Removed dynamic connection metrics which are creting stale metrics and moved these metrics to respected Queue/Topic.
 ### Version 2.4.2
   - Revamped to support new extension framework
   - Added support for multiple EMS servers
