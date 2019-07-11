@@ -72,6 +72,7 @@ directory.
  * host - Name or IP address of the Tibco EMS server. Required.
  * port - TCP port number where the Tibco server is listening. The default value is 7222. Required.
  * protocol - Specify "tcp" to use standard TCP or "ssl" to use SSL. The default is "tcp".
+ * faultTolerantServers - Fault tolerant servers to try when the master is not active.
  * user - Administrative user ID for the Tibco admin interface. The default value is "admin". Required.
  * password - Password for the administrative user ID. The default value is an empty password. Required.
  * encryptedPassword & encryptionKey - If you want to encrypt the password them provide these two values.
