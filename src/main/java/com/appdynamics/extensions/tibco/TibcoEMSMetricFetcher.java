@@ -25,6 +25,7 @@ import com.appdynamics.extensions.tibco.collectors.TopicMetricCollector;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
 import com.appdynamics.extensions.tibco.util.Constants;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.google.common.collect.Maps;
 import com.tibco.tibjms.TibjmsSSL;
 import com.tibco.tibjms.admin.TibjmsAdmin;
@@ -51,13 +52,15 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
     private MetricWriteHelper metricWriteHelper;
     private Metrics.EMSMetrics emsMetrics;
     private String metricPrefix;
+    private Cache<String, TibjmsAdmin> connectionCache;
 
 
-    public TibcoEMSMetricFetcher(TasksExecutionServiceProvider serviceProvider, MonitorContextConfiguration configuration, Map<String, ?> emsServer) {
+    public TibcoEMSMetricFetcher(TasksExecutionServiceProvider serviceProvider, MonitorContextConfiguration configuration, Map<String, ?> emsServer, Cache<String, TibjmsAdmin> connectionCache) {
         this.configuration = configuration;
         this.emsServer = emsServer;
         this.metricWriteHelper = serviceProvider.getMetricWriteHelper();
         this.metricPrefix = configuration.getMetricPrefix();
+        this.connectionCache = connectionCache;
 
         emsMetrics = (Metrics.EMSMetrics) configuration.getMetricsXml();
     }
@@ -119,8 +122,6 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
         if (faultTolerantServers != null && faultTolerantServers.size() > 0) {
             emsURL = addFaultTolerantURLs(emsURL, faultTolerantServers);
         }
-
-        logger.debug(String.format("Connecting to %s as %s", emsURL, user));
 
         String plainPassword = getPassword(password, encryptedPassword, encryptionKey);
 
@@ -230,10 +231,13 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
             fullMetricPrefix = refine(metricPrefix) + "|";
         }
 
-        TibjmsAdmin tibjmsAdmin = null;
-        try {
-            tibjmsAdmin = new TibjmsAdmin(emsURL, user, plainPassword, sslParams);
+        TibjmsAdmin tibjmsAdmin = createOrGetConnection(emsURL, user, plainPassword, sslParams, displayName);
 
+        if (tibjmsAdmin == null) { //Could not get connection
+            return;
+        }
+
+        try {
             Phaser phaser = new Phaser();
 
             //Register for this task
@@ -283,27 +287,32 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
                 }
             }
 
-
             //Arrive for this task and Wait for all other tasks
             phaser.arriveAndAwaitAdvance();
-
-        } catch (TibjmsAdminException e) {
-            logger.error("Error while collecting metrics from Tibco EMS server [ " + displayName + " ]", e);
         } catch (Exception e) {
             logger.error("Unknown Error while collecting metrics from Tibco EMS server [ " + displayName + " ]", e);
-        } finally {
-            if (tibjmsAdmin != null) {
-                try {
-                    tibjmsAdmin.close();
-                } catch (TibjmsAdminException e) {
-                    logger.error("Error while closing the connection", e);
-                }
-            }
         }
+
         if (collectedMetrics.size() > 0) {
             logger.debug("Printing {} metrics", collectedMetrics.size());
             metricWriteHelper.transformAndPrintMetrics(collectedMetrics);
         }
+    }
+
+    private TibjmsAdmin createOrGetConnection(String emsURL, String user, String plainPassword, Hashtable sslParams, String displayName) {
+        TibjmsAdmin tibjmsAdmin = connectionCache.getIfPresent(emsURL);
+        try {
+            if (tibjmsAdmin == null) {
+                logger.debug(String.format("Connecting to %s as %s", emsURL, user));
+                tibjmsAdmin = new TibjmsAdmin(emsURL, user, plainPassword, sslParams);
+                connectionCache.put(emsURL, tibjmsAdmin);
+            }
+        } catch (TibjmsAdminException e) {
+            logger.error("Error while connecting to Tibco EMS server [ " + displayName + " ]", e);
+        } catch (Exception e) {
+            logger.error("Unknown Error while connecting to Tibco EMS server [ " + displayName + " ]", e);
+        }
+        return tibjmsAdmin;
     }
 
     private Map<String, String> getQueueTopicMetricPrefixes(Metrics[] allMetrics) {

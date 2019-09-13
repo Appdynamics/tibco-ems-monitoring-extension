@@ -8,13 +8,6 @@
 
 package com.appdynamics.extensions.tibco;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.appdynamics.extensions.MonitorExecutorService;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorContext;
@@ -27,6 +20,7 @@ import com.appdynamics.extensions.tibco.collectors.RouteMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ServerMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.TopicMetricCollector;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
+import com.google.common.cache.Cache;
 import com.tibco.tibjms.admin.ServerInfo;
 import com.tibco.tibjms.admin.TibjmsAdmin;
 import org.junit.Test;
@@ -41,6 +35,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Satish Muddam
@@ -93,6 +94,9 @@ public class TibcoEMSMetricFetcherTest {
     @Mock
     private ServerInfo serverInfo;
 
+    @Mock
+    private Cache<String, TibjmsAdmin> connectionCache;
+
 
     @Test
     public void testShouldExecuteAllCollectorsWhenEnabled() throws Exception {
@@ -137,7 +141,7 @@ public class TibcoEMSMetricFetcherTest {
 
         //when(serverMetricCollector.run()).then()
 
-        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer);
+        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer, connectionCache);
         tibcoEMSMetricFetcher.run();
 
         verify(serverMetricCollector, times(1)).run();
@@ -192,7 +196,7 @@ public class TibcoEMSMetricFetcherTest {
 
         //when(serverMetricCollector.run()).then()
 
-        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer);
+        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer, connectionCache);
         tibcoEMSMetricFetcher.run();
 
         verify(serverMetricCollector, times(1)).run();
