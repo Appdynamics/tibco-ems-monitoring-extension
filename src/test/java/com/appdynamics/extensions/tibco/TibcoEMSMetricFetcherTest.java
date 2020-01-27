@@ -94,10 +94,6 @@ public class TibcoEMSMetricFetcherTest {
     @Mock
     private ServerInfo serverInfo;
 
-    @Mock
-    private Cache<String, TibjmsAdmin> connectionCache;
-
-
     @Test
     public void testShouldExecuteAllCollectorsWhenEnabled() throws Exception {
 
@@ -141,7 +137,7 @@ public class TibcoEMSMetricFetcherTest {
 
         //when(serverMetricCollector.run()).then()
 
-        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer, connectionCache);
+        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer);
         tibcoEMSMetricFetcher.run();
 
         verify(serverMetricCollector, times(1)).run();
@@ -196,7 +192,7 @@ public class TibcoEMSMetricFetcherTest {
 
         //when(serverMetricCollector.run()).then()
 
-        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer, connectionCache);
+        TibcoEMSMetricFetcher tibcoEMSMetricFetcher = new TibcoEMSMetricFetcher(serviceProvider, configuration, emsServer);
         tibcoEMSMetricFetcher.run();
 
         verify(serverMetricCollector, times(1)).run();

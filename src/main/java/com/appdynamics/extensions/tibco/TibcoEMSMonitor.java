@@ -45,8 +45,6 @@ public class TibcoEMSMonitor extends ABaseMonitor {
     private static final String CONFIG_ARG = "config-file";
     private static final String METRIC_ARG = "metric-file";
 
-    private Cache<String, TibjmsAdmin> connectionCache;
-
     public TibcoEMSMonitor() {
         String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
         logger.info(msg);
@@ -68,7 +66,7 @@ public class TibcoEMSMonitor extends ABaseMonitor {
 
         for (Map<String, ?> emsServer : emsServers) {
 
-            TibcoEMSMetricFetcher task = new TibcoEMSMetricFetcher(tasksExecutionServiceProvider, this.getContextConfiguration(), emsServer, connectionCache);
+            TibcoEMSMetricFetcher task = new TibcoEMSMetricFetcher(tasksExecutionServiceProvider, this.getContextConfiguration(), emsServer);
 
             if (emsServers.size() > 1) {
                 AssertUtils.assertNotNull(emsServer.get(Constants.DISPLAY_NAME),
@@ -87,36 +85,6 @@ public class TibcoEMSMonitor extends ABaseMonitor {
     @Override
     protected void initializeMoreStuff(Map<String, String> args) {
         getContextConfiguration().setMetricXml(args.get("metric-file"), Metrics.EMSMetrics.class);
-
-        int connectionCacheTimeoutInMinutes = (Integer) getContextConfiguration().getConfigYml().get("connectionCacheTimeoutInMinutes");
-        if (connectionCache == null) {
-            connectionCache = CacheBuilder.newBuilder().expireAfterAccess(connectionCacheTimeoutInMinutes, TimeUnit.MINUTES)
-                    .removalListener(new RemovalListener<String, TibjmsAdmin>() {
-                        @Override
-                        public void onRemoval(RemovalNotification<String, TibjmsAdmin> removalNotification) {
-
-                            TibjmsAdmin connection = removalNotification.getValue();
-                            if (connection != null) {
-                                try {
-                                    logger.info("Closing the evicted connection for the server {}", removalNotification.getKey());
-                                    connection.close();
-                                } catch (TibjmsAdminException e) {
-                                    logger.error("Error while closing the connection", e);
-                                }
-                            }
-
-                        }
-                    }).build();
-        }
-
-        //Need to call cleanUp explicitly to invoke removeListener on the expired entry
-        //Call the cleanup every connectionCacheTimeoutInMinutes + 1 minutes to include all the expired entries at connectionCacheTimeoutInMinutes minutes.
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                connectionCache.cleanUp();
-            }
-        }, connectionCacheTimeoutInMinutes, connectionCacheTimeoutInMinutes + 1, TimeUnit.MINUTES);
     }
 
     public static void main(String[] args) {

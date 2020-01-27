@@ -36,7 +36,6 @@ servers:
      sslVerifyHostName:
      sslVendor:
 
-
 # Each server instance needs 9 threads, one for the server instance itself, and others for collecting metrics from connection, consumer, durable, producer, queue, route, server and topic.
 # So, please change the value accordingly(Based on the number of server instances you are monitoring).
 numberOfThreads: 15
@@ -44,10 +43,6 @@ numberOfThreads: 15
 #Enabling this will display dynamic ids like ProducerID and Consumer ID in the metric path. But this will also increase the stale metrics as the ids are dynamic and they change continuously.
 #Disabling this will aggregate all the values from the destinations ( Producers, Consumers ) and print that value to the controller
 displayDynamicIdsInMetricPath: false
-
-#This extension will cache the connections and re-uses instead of creating the connection on every run. This is the eviction period of the cache, defaults to 5 minutes. Connections are evicted and closed
-#when they are inactive for this configured minutes. This value can not be changed after initializing without re-starting the agent.
-connectionCacheTimeoutInMinutes: 5
 
 
 #This will create this metric in all the tiers, under this path. Please make sure to have a trailing |

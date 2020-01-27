@@ -25,7 +25,6 @@ import com.appdynamics.extensions.tibco.collectors.TopicMetricCollector;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
 import com.appdynamics.extensions.tibco.util.Constants;
 import com.google.common.base.Strings;
-import com.google.common.cache.Cache;
 import com.google.common.collect.Maps;
 import com.tibco.tibjms.TibjmsSSL;
 import com.tibco.tibjms.admin.TibjmsAdmin;
@@ -52,16 +51,12 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
     private MetricWriteHelper metricWriteHelper;
     private Metrics.EMSMetrics emsMetrics;
     private String metricPrefix;
-    private Cache<String, TibjmsAdmin> connectionCache;
 
-
-    public TibcoEMSMetricFetcher(TasksExecutionServiceProvider serviceProvider, MonitorContextConfiguration configuration, Map<String, ?> emsServer, Cache<String, TibjmsAdmin> connectionCache) {
+    public TibcoEMSMetricFetcher(TasksExecutionServiceProvider serviceProvider, MonitorContextConfiguration configuration, Map<String, ?> emsServer) {
         this.configuration = configuration;
         this.emsServer = emsServer;
         this.metricWriteHelper = serviceProvider.getMetricWriteHelper();
         this.metricPrefix = configuration.getMetricPrefix();
-        this.connectionCache = connectionCache;
-
         emsMetrics = (Metrics.EMSMetrics) configuration.getMetricsXml();
     }
 
@@ -231,7 +226,7 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
             fullMetricPrefix = refine(metricPrefix) + "|";
         }
 
-        TibjmsAdmin tibjmsAdmin = createOrGetConnection(emsURL, user, plainPassword, sslParams, displayName);
+        TibjmsAdmin tibjmsAdmin = createConnection(emsURL, user, plainPassword, sslParams, displayName);
 
         if (tibjmsAdmin == null) { //Could not get connection
             return;
@@ -291,6 +286,16 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
             phaser.arriveAndAwaitAdvance();
         } catch (Exception e) {
             logger.error("Unknown Error while collecting metrics from Tibco EMS server [ " + displayName + " ]", e);
+        } finally {
+            if (tibjmsAdmin != null) {
+                try {
+                    logger.debug(String.format("Closing collection to server %s", emsURL));
+                    tibjmsAdmin.close();
+                    logger.debug(String.format("Connection closed to server %s", emsURL));
+                } catch (TibjmsAdminException e) {
+                    logger.error("Error while closing the connection", e);
+                }
+            }
         }
 
         if (collectedMetrics.size() > 0) {
@@ -299,14 +304,12 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
         }
     }
 
-    private TibjmsAdmin createOrGetConnection(String emsURL, String user, String plainPassword, Hashtable sslParams, String displayName) {
-        TibjmsAdmin tibjmsAdmin = connectionCache.getIfPresent(emsURL);
+    private TibjmsAdmin createConnection(String emsURL, String user, String plainPassword, Hashtable sslParams, String displayName) {
+        TibjmsAdmin tibjmsAdmin = null;
         try {
-            if (tibjmsAdmin == null) {
-                logger.debug(String.format("Connecting to %s as %s", emsURL, user));
-                tibjmsAdmin = new TibjmsAdmin(emsURL, user, plainPassword, sslParams);
-                connectionCache.put(emsURL, tibjmsAdmin);
-            }
+            logger.debug(String.format("Connecting to %s as %s", emsURL, user));
+            tibjmsAdmin = new TibjmsAdmin(emsURL, user, plainPassword, sslParams);
+
         } catch (TibjmsAdminException e) {
             logger.error("Error while connecting to Tibco EMS server [ " + displayName + " ]", e);
         } catch (Exception e) {
