@@ -8,6 +8,7 @@
 
 package com.appdynamics.extensions.tibco.collectors;
 
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
 import com.appdynamics.extensions.tibco.metrics.Metric;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
@@ -15,7 +16,7 @@ import com.google.common.base.Strings;
 import com.tibco.tibjms.admin.DurableInfo;
 import com.tibco.tibjms.admin.TibjmsAdmin;
 import com.tibco.tibjms.admin.TibjmsAdminException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public class DurableMetricCollector extends AbstractMetricCollector {
 
-    private static final Logger logger = Logger.getLogger(DurableMetricCollector.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(DurableMetricCollector.class);
     private final Phaser phaser;
     private List<com.appdynamics.extensions.metrics.Metric> collectedMetrics;
     private Map<String, String> queueTopicMetricPrefixes;
@@ -111,11 +112,6 @@ public class DurableMetricCollector extends AbstractMetricCollector {
             } else if ("PendingMessageSize".equalsIgnoreCase(name)) {
                 long pendingMessageSize = durableInfo.getPendingMessageSize();
                 value = BigDecimal.valueOf(pendingMessageSize);
-            }
-
-            String alias = metric.getAlias();
-            if (alias != null) {
-                name = alias;
             }
 
             Map<String, String> propertiesMap = objectMapper.convertValue(metric, Map.class);

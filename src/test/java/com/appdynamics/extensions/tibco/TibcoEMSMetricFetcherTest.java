@@ -8,7 +8,7 @@
 
 package com.appdynamics.extensions.tibco;
 
-import com.appdynamics.extensions.MonitorExecutorService;
+import com.appdynamics.extensions.executorservice.MonitorExecutorService;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorContext;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
@@ -20,7 +20,6 @@ import com.appdynamics.extensions.tibco.collectors.RouteMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ServerMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.TopicMetricCollector;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
-import com.google.common.cache.Cache;
 import com.tibco.tibjms.admin.ServerInfo;
 import com.tibco.tibjms.admin.TibjmsAdmin;
 import org.junit.Test;

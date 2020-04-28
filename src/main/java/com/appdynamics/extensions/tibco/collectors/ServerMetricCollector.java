@@ -8,13 +8,13 @@
 
 package com.appdynamics.extensions.tibco.collectors;
 
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.tibco.metrics.Metric;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
 import com.google.common.base.Strings;
 import com.tibco.tibjms.admin.ServerInfo;
 import com.tibco.tibjms.admin.TibjmsAdmin;
 import com.tibco.tibjms.admin.TibjmsAdminException;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.concurrent.Phaser;
  */
 public class ServerMetricCollector extends AbstractMetricCollector {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ServerMetricCollector.class);
+    private static final org.slf4j.Logger logger = ExtensionsLoggerFactory.getLogger(ServerMetricCollector.class);
     private final Phaser phaser;
     private List<com.appdynamics.extensions.metrics.Metric> collectedMetrics;
 
@@ -236,11 +236,6 @@ public class ServerMetricCollector extends AbstractMetricCollector {
                     value = BigDecimal.valueOf(isFaultTolerantStandbyServer);
                 } else {
                     logger.info("Invalid metric name [{}] configured in metrics.xml. Ignoring this metric", name);
-                }
-
-                String alias = metric.getAlias();
-                if (alias != null) {
-                    name = alias;
                 }
 
                 Map<String, String> propertiesMap = objectMapper.convertValue(metric, Map.class);

@@ -11,10 +11,9 @@ package com.appdynamics.extensions.tibco;
 
 import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
-import com.appdynamics.extensions.TaskInputArgs;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
-import com.appdynamics.extensions.crypto.CryptoUtil;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.tibco.collectors.ConsumerMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.DurableMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.ProducerMetricCollector;
@@ -24,18 +23,19 @@ import com.appdynamics.extensions.tibco.collectors.ServerMetricCollector;
 import com.appdynamics.extensions.tibco.collectors.TopicMetricCollector;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
 import com.appdynamics.extensions.tibco.util.Constants;
+import com.appdynamics.extensions.util.CryptoUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.tibco.tibjms.TibjmsSSL;
 import com.tibco.tibjms.admin.TibjmsAdmin;
 import com.tibco.tibjms.admin.TibjmsAdminException;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Phaser;
 import java.util.regex.Pattern;
 
@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  */
 public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(TibcoEMSMetricFetcher.class);
+    private static final org.slf4j.Logger logger = ExtensionsLoggerFactory.getLogger(TibcoEMSMetricFetcher.class);
 
     private MonitorContextConfiguration configuration;
     private Map<String, ?> emsServer;
@@ -143,10 +143,15 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
                 sslParams.put(TibjmsSSL.TRUSTED_CERTIFICATES, sslTrustedCerts);
             }
 
+            String sslCiphers = (String) emsServer.get("sslCiphers");
             String sslDebug = (String) emsServer.get("sslDebug");
             String sslVerifyHost = (String) emsServer.get("sslVerifyHost");
             String sslVerifyHostName = (String) emsServer.get("sslVerifyHostName");
             String sslVendor = (String) emsServer.get("sslVendor");
+
+            if (!Strings.isNullOrEmpty(sslCiphers)) {
+                sslParams.put(TibjmsSSL.CIPHER_SUITES, sslCiphers);
+            }
 
             if (!Strings.isNullOrEmpty(sslVendor)) {
                 sslParams.put(TibjmsSSL.VENDOR, sslVendor);
@@ -217,7 +222,7 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
         List<Pattern> includeConsumersPatterns = buildPattern(includeConsumers);
 
 
-        List<com.appdynamics.extensions.metrics.Metric> collectedMetrics = new ArrayList<>();
+        List<com.appdynamics.extensions.metrics.Metric> collectedMetrics = new CopyOnWriteArrayList<>();
 
         String fullMetricPrefix;
         if (displayName != null) {
@@ -298,9 +303,13 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
             }
         }
 
-        if (collectedMetrics.size() > 0) {
-            logger.debug("Printing {} metrics", collectedMetrics.size());
-            metricWriteHelper.transformAndPrintMetrics(collectedMetrics);
+        try {
+            if (collectedMetrics.size() > 0) {
+                logger.debug("Printing {} metrics", collectedMetrics.size());
+                metricWriteHelper.transformAndPrintMetrics(collectedMetrics);
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error when printing metrics", e);
         }
     }
 
@@ -348,9 +357,9 @@ public class TibcoEMSMetricFetcher implements AMonitorTaskRunnable {
                 return "";
             }
             Map<String, String> args = Maps.newHashMap();
-            args.put(TaskInputArgs.ENCRYPTED_PASSWORD, encryptedPassword);
-            args.put(TaskInputArgs.ENCRYPTION_KEY, encryptionKey);
-            return CryptoUtil.getPassword(args);
+            args.put(com.appdynamics.extensions.Constants.ENCRYPTED_PASSWORD, encryptedPassword);
+            args.put(com.appdynamics.extensions.Constants.ENCRYPTION_KEY, encryptionKey);
+            return CryptoUtils.getPassword(args);
         } catch (IllegalArgumentException e) {
             String msg = "Encryption Key not specified. Please set the value in config.yml.";
             logger.error(msg);

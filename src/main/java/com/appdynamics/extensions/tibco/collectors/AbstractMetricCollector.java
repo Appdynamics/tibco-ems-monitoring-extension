@@ -10,9 +10,9 @@ package com.appdynamics.extensions.tibco.collectors;
 
 import com.appdynamics.extensions.tibco.TibcoEMSMetricFetcher;
 import com.appdynamics.extensions.tibco.metrics.Metrics;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibco.tibjms.admin.TibjmsAdmin;
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.regex.Matcher;
