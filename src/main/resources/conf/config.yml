@@ -58,13 +58,13 @@ metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"
 # Values provided here can be overridden if the same field is configured in either controller-info.xml or system properties.
 controllerInfo:
   controllerHost: ""  # -Dappdynamics.controller.hostName
-  controllerPort: "" # -Dappdynamics.controller.port
+  controllerPort:  # -Dappdynamics.controller.port
   controllerSslEnabled: false # -Dappdynamics.controller.ssl.enabled
   enableOrchestration: false # N/A
   uniqueHostId: "" # -Dappdynamics.agent.uniqueHostId
   username: "admin" # -Dappdynamics.agent.monitors.controller.username
-  password: "admin" # -Dappdynamics.agent.monitors.controller.password
-  encryptedPassword: "" # -Dappdynamics.agent.monitors.controller.encryptedPassword
+  password: "" # -Dappdynamics.agent.monitors.controller.password
+  encryptedPassword: "j+0oxTzUtw2xAdaq4UUq/Q==" # -Dappdynamics.agent.monitors.controller.encryptedPassword
   accountAccessKey: "" # -Dappdynamics.agent.accountAccessKey
   account: "" # -Dappdynamics.agent.accountName
   machinePath: "" # -Dappdynamics.machine.agent.hierarchyPath
@@ -72,3 +72,6 @@ controllerInfo:
   applicationName: "" # -Dappdynamics.agent.applicationName
   tierName: "" # -Dappdynamics.agent.tierName
   nodeName: "" # -Dappdynamics.agent.nodeName
+
+#Encryption key for your controllerInfo password
+encryptionKey: "abcd"
