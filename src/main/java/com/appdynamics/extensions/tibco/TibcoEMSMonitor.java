@@ -8,131 +8,65 @@
 
 package com.appdynamics.extensions.tibco;
 
-import com.appdynamics.extensions.conf.MonitorConfiguration;
-import com.appdynamics.extensions.crypto.Decryptor;
-import com.appdynamics.extensions.crypto.Encryptor;
-import com.appdynamics.extensions.util.MetricWriteHelper;
-import com.appdynamics.extensions.util.MetricWriteHelperFactory;
-import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
-import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
-import com.singularity.ee.agent.systemagent.api.TaskOutput;
-import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import com.appdynamics.extensions.ABaseMonitor;
+import com.appdynamics.extensions.TasksExecutionServiceProvider;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import com.appdynamics.extensions.tibco.metrics.Metrics;
+import com.appdynamics.extensions.tibco.util.Constants;
+import com.appdynamics.extensions.util.AssertUtils;
 
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author Satish Muddam
  */
-public class TibcoEMSMonitor extends AManagedMonitor {
+public class TibcoEMSMonitor extends ABaseMonitor {
 
-    private static final String METRIC_PREFIX = "Custom Metrics|Tibco EMS|";
+    private static final String DEFAULT_METRIC_PREFIX = "Custom Metrics|Tibco EMS|";
 
-    private static final Logger logger = Logger.getLogger(TibcoEMSMonitor.class);
-
-    private static final String CONFIG_ARG = "config-file";
-
-    private boolean initialized;
-    private MonitorConfiguration configuration;
-    private Map<String, Map<String, String>> cachedStats;
+    private static final org.slf4j.Logger logger = ExtensionsLoggerFactory.getLogger(TibcoEMSMonitor.class);
 
     public TibcoEMSMonitor() {
         String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
         logger.info(msg);
         System.out.println(msg);
-        cachedStats = new HashMap<String, Map<String, String>>();
     }
 
-    private static String getImplementationVersion() {
-        return TibcoEMSMonitor.class.getPackage().getImplementationTitle();
+    protected String getDefaultMetricPrefix() {
+        return DEFAULT_METRIC_PREFIX;
     }
 
-    public TaskOutput execute(Map<String, String> args, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
-        String msg = "Using Monitor Version [" + getImplementationVersion() + "]";
-        logger.info(msg);
-        logger.info("Starting the Tibco EMS Monitoring task.");
+    public String getMonitorName() {
+        return "Tibco EMS Monitor";
+    }
 
-        Thread thread = Thread.currentThread();
-        ClassLoader originalCl = thread.getContextClassLoader();
-        thread.setContextClassLoader(AManagedMonitor.class.getClassLoader());
+    protected void doRun(TasksExecutionServiceProvider tasksExecutionServiceProvider) {
 
-        try {
-            if (!initialized) {
-                initialize(args);
+        List<Map<String, ?>> emsServers = (List<Map<String, ?>>)
+                this.getContextConfiguration().getConfigYml().get(Constants.SERVERS);
+
+        for (Map<String, ?> emsServer : emsServers) {
+
+            TibcoEMSMetricFetcher task = new TibcoEMSMetricFetcher(tasksExecutionServiceProvider, this.getContextConfiguration(), emsServer);
+
+            if (emsServers.size() > 1) {
+                AssertUtils.assertNotNull(emsServer.get(Constants.DISPLAY_NAME),
+                        "The displayName can not be null");
             }
-            configuration.executeTask();
-
-            logger.info("Finished Tibco EMS monitor execution");
-            return new TaskOutput("Finished Tibco EMS monitor execution");
-        } catch (Exception e) {
-            logger.error("Failed to execute the Tibco EMS monitoring task", e);
-            throw new TaskExecutionException("Failed to execute the Tibco EMS monitoring task" + e);
-        } finally {
-            thread.setContextClassLoader(originalCl);
+            tasksExecutionServiceProvider.submit((String) emsServer.get(Constants.DISPLAY_NAME), task);
         }
     }
 
-    private void initialize(Map<String, String> argsMap) {
-        if (!initialized) {
-            final String configFilePath = argsMap.get(CONFIG_ARG);
-
-            MetricWriteHelper metricWriteHelper = MetricWriteHelperFactory.create(this);
-            MonitorConfiguration conf = new MonitorConfiguration(METRIC_PREFIX, new TaskRunnable(), metricWriteHelper);
-            conf.setConfigYml(configFilePath);
-
-            conf.checkIfInitialized(MonitorConfiguration.ConfItem.CONFIG_YML, MonitorConfiguration.ConfItem.METRIC_PREFIX,
-                    MonitorConfiguration.ConfItem.METRIC_WRITE_HELPER, MonitorConfiguration.ConfItem.EXECUTOR_SERVICE);
-            this.configuration = conf;
-            initialized = true;
-        }
+    @Override
+    protected List<Map<String, ?>> getServers() {
+        List<Map<String, ?>> servers = (List<Map<String, ?>>) this.getContextConfiguration().getConfigYml().get(Constants.SERVERS);
+        AssertUtils.assertNotNull(servers, "The 'servers' section in config.yml is not initialised");
+        return servers;
     }
 
-    private class TaskRunnable implements Runnable {
-
-        public void run() {
-            if (!initialized) {
-                logger.info("Tibco EMS Monitor is still initializing");
-                return;
-            }
-
-            Map<String, ?> config = configuration.getConfigYml();
-
-            List<Map> emsServers = (List<Map>) config.get("emsServers");
-
-            if (emsServers == null || emsServers.isEmpty()) {
-                logger.error("No EMS servers configured in config.yml");
-                return;
-            }
-
-            for (Map emsServer : emsServers) {
-                TibcoEMSMetricFetcher task = new TibcoEMSMetricFetcher(configuration, emsServer, cachedStats);
-                configuration.getExecutorService().execute(task);
-            }
-        }
+    @Override
+    protected void initializeMoreStuff(Map<String, String> args) {
+        getContextConfiguration().setMetricXml(args.get("metric-file"), Metrics.EMSMetrics.class);
     }
-
-    public static void main(String[] args) throws TaskExecutionException {
-
-        ConsoleAppender ca = new ConsoleAppender();
-        ca.setWriter(new OutputStreamWriter(System.out));
-        ca.setLayout(new PatternLayout("%-5p [%t]: %m%n"));
-        ca.setThreshold(Level.DEBUG);
-
-        logger.getRootLogger().addAppender(ca);
-
-        TibcoEMSMonitor monitor = new TibcoEMSMonitor();
-
-        Map<String, String> taskArgs = new HashMap<String, String>();
-        taskArgs.put(CONFIG_ARG, "F:\\AppDynamics\\extensions\\tibcoems-monitoring-extension\\src\\main\\resources\\conf\\config.yml");
-
-        monitor.execute(taskArgs, null);
-
-    }
-
 }

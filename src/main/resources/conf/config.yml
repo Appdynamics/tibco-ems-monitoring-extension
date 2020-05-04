@@ -5,50 +5,46 @@
 ## sslIdentityPassword: password to decrypt the private key
 ## sslTrustedCerts: path to the server certificate file (example: conf/server_cert.pem)
 ##########
-emsServers:
-   # Keep the display name blank if Tibco EMS Extension is monitoring only one Tibco Server. 
+servers:
+   # Keep the display name blank if Tibco EMS Extension is monitoring only one Tibco Server.
    - displayName: "Local EMS"
-     host: "192.168.1.9"
-     port: 7222
+     host: "192.168.1.11"
+     port: "6222"
      # Supports tcp and ssl
      protocol: "tcp"
+     #Add fault Tolerant servers
+     faultTolerantServers: ["192.168.1.11:7222"]
      user: "admin"
      # password or encryptedPassword and encryptionKey are required
-     password: ""
+     password: "admin"
      encryptedPassword:
      encryptionKey:
-     collectConnections: true
-     collectDurables: true
-     collectRoutes: true
-     collectConsumers: true
-     collectProducers: true
-     collectQueues: true
-     collectTopics: true
-     #config to show temp queues and topics
-     showTemp: false
-     #config to show system queues and topics
-     showSystem: false
-     includeQueues: []
-     excludeQueues: ["satish1"]
-     includeTopics: ["satish"]
-     excludeTopics: []
-     includeDurables: []
-     excludeDurables: []
-     includeRoutes: []
-     excludeRoutes: []
+    #We are going to  remove support for .* in next release. Other regex's are still supported.
+     includeQueues: [".*"]
+     includeTopics: [".*"]
+     includeDurables: [".*"]
+     includeRoutes: [".*"]
+     includeProducers: [".*"]
+     includeConsumers: [".*"]
      sslIdentityFile:
      sslIdentityPassword:
      sslIdentityEncryptedPassword:
      sslTrustedCerts:
      #ssl config optional settings
+     sslCiphers: ""
      sslDebug:
      sslVerifyHost:
      sslVerifyHostName:
      sslVendor:
 
+# Each server instance needs 9 threads, one for the server instance itself, and others for collecting metrics from connection, consumer, durable, producer, queue, route, server and topic.
+# So, please change the value accordingly(Based on the number of server instances you are monitoring).
+numberOfThreads: 15
 
-# number of concurrent tasks
-numberOfThreads: 1
+#Enabling this will display dynamic ids like ProducerID and Consumer ID in the metric path. But this will also increase the stale metrics as the ids are dynamic and they change continuously.
+#Disabling this will aggregate all the values from the destinations ( Producers, Consumers ) and print that value to the controller
+displayDynamicIdsInMetricPath: false
+
 
 #This will create this metric in all the tiers, under this path. Please make sure to have a trailing |
 #metricPrefix: "Custom Metrics|Tibco EMS|"
@@ -56,3 +52,26 @@ numberOfThreads: 1
 #This will create it in specific Tier aka Component. Replace <COMPONENT_ID>. Please make sure to have a trailing |.
 #To find out the COMPONENT_ID, please see the screen shot here https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
 metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"
+
+# If any of the following fields are not set, the values of the specific fields are set from the system properties of the corresponding fields as specified in the comments.
+# If the system properties are not set for the field, then the data is retrieved from machine agent configFile. Please refer to ControllerInfoFactory for more details.
+# Values provided here can be overridden if the same field is configured in either controller-info.xml or system properties.
+controllerInfo:
+  controllerHost: ""  # -Dappdynamics.controller.hostName
+  controllerPort:  # -Dappdynamics.controller.port
+  controllerSslEnabled: false # -Dappdynamics.controller.ssl.enabled
+  enableOrchestration: false # N/A
+  uniqueHostId: "" # -Dappdynamics.agent.uniqueHostId
+  username: "admin" # -Dappdynamics.agent.monitors.controller.username
+  password: "" # -Dappdynamics.agent.monitors.controller.password
+  encryptedPassword: "j+0oxTzUtw2xAdaq4UUq/Q==" # -Dappdynamics.agent.monitors.controller.encryptedPassword
+  accountAccessKey: "" # -Dappdynamics.agent.accountAccessKey
+  account: "" # -Dappdynamics.agent.accountName
+  machinePath: "" # -Dappdynamics.machine.agent.hierarchyPath
+  simEnabled: false # -Dappdynamics.sim.enabled
+  applicationName: "" # -Dappdynamics.agent.applicationName
+  tierName: "" # -Dappdynamics.agent.tierName
+  nodeName: "" # -Dappdynamics.agent.nodeName
+
+#Encryption key for your controllerInfo password
+encryptionKey: "abcd"
