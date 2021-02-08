@@ -248,13 +248,17 @@ To use the workbench
 For any questions or feature requests, please contact the [AppDynamics Center 
 of Excellence][].
 
-**Version:** 3.0.0
-**Controller Compatibility:** 3.6 or later  
-**Last Updated:** 14-Dec-2018
+**Version:** 3.0.1
+**Controller Compatibility:** 4.5 or later  
+**Agent Compatibility:** 4.5 or later 
+**Last Updated:** 08-Feb-2021
 
 ------------------------------------------------------------------------------
 
 ## Release Notes
+
+### Version 3.0.1
+  - Updated to latest version of commons.
 
 ### Version 3.0.0
   - Ported to latest extension commons
