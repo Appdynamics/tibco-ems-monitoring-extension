@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>tibcoems-monitoring-extension</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <name>Tibco EMS Monitor</name>
     <description>Monitor Tibco EMS</description>
 
@@ -23,20 +23,20 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>2.2.3</version>
+            <version>2.2.4</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>
             <version>2.0</version>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>tibco</groupId>
             <artifactId>tibcrypt</artifactId>
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/tibcrypt.jar</systemPath>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>tibco</groupId>
             <artifactId>tibemsd_sec</artifactId>
@@ -65,13 +65,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/tibjmsapps.jar</systemPath>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>tibco</groupId>
             <artifactId>tibjmsufo</artifactId>
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/tibjmsufo.jar</systemPath>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>tibco</groupId>
             <artifactId>tibrvjms</artifactId>

@@ -1,4 +1,5 @@
-
+### Version 3.0.1
+* Updated to latest version of commons (2.2.4).
 ### Version 3.0.0
 * Ported to latest extension commons ( 2.2.3 ) which fixes the log4j issues.
 * Added fault tolerant server configuration.

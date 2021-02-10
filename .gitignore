@@ -2,3 +2,4 @@
 .idea
 /tibco-ems-monitoring-extension.iml
 /lib/
+.DS_Store
