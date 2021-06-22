@@ -2,7 +2,7 @@
 TibcoEMSMonitor
 ===============
 
-## Introduction
+## Use Case
 
 An AppDynamics Machine Agent extensionm to report metrics from a Tibco EMS 
 Server and its queues.
