@@ -2,7 +2,7 @@
 TibcoEMSMonitor
 ===============
 
-## Introduction
+## Use Case
 
 An AppDynamics Machine Agent extensionm to report metrics from a Tibco EMS 
 Server and its queues.
@@ -211,103 +211,40 @@ when starting the Machine Agent, like this:
 
     java -Dappdynamics.agent.maxMetrics=1000 -jar machineagent.jar
 
-## Password Encryption Support
+## Credentials Encryption
+Please visit [this page](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-Password-Encryption-with-Extensions/ta-p/29397) to get detailed instructions on password encryption. The steps in this document will guide you through the whole process.
 
-To avoid setting the clear text password in the config.yml, please follow the process to encrypt the password and set the encrypted password and the encryptionKey in the config.yml
+## Extensions Workbench
+Workbench is an inbuilt feature provided with each extension in order to assist you to fine tune the extension setup before you actually deploy it on the controller. Please review the following document on [How to use the Extensions WorkBench](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-the-Extensions-WorkBench/ta-p/30130)
 
-1.  To encrypt password from the commandline go to `<Machine_Agent>`/monitors/TibcoEMSMonitor dir and run the below common
+## Troubleshooting
+Please follow the steps listed in this [troubleshooting-document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695) in order to troubleshoot your issue. These are a set of common issues that customers might have faced during the installation of the extension. If these don't solve your issue, please follow the last step on the [troubleshooting-document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695) to contact the support team.
 
-<pre>java -cp "tibcoems-monitoring-extension.jar" com.appdynamics.extensions.crypto.Encryptor myKey myPassword</pre>
+## Support Tickets
+If after going through the [Troubleshooting Document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695) you have not been able to get your extension working, please file a ticket and add the following information.
 
-## Workbench
+Please provide the following in order for us to assist you better.
 
-Workbench is a feature by which you can preview the metrics before registering it with the controller. This is useful if you want to fine tune the configurations. Workbench is embedded into the extension jar.
+    1. Stop the running machine agent.
+    2. Delete all existing logs under <MachineAgent>/logs.
+    3. Please enable debug logging by editing the file <MachineAgent>/conf/logging/log4j.xml. Change the level value of the following <logger> elements to debug.
+        <logger name="com.singularity">
+        <logger name="com.appdynamics">
+    4. Start the machine agent and please let it run for 10 mins. Then zip and upload all the logs in the directory <MachineAgent>/logs/*.
+    5. Attach the zipped <MachineAgent>/conf/* directory here.
+    6. Attach the zipped <MachineAgent>/monitors/ExtensionFolderYouAreHavingIssuesWith directory here.
 
-To use the workbench
-
-* Follow all the installation steps
-* Start the workbench with the command
-~~~
-  java -jar /path/to/MachineAgent/monitors/TibcoEMSMonitor/tibcoems-monitoring-extension.jar
-  This starts an http server at http://host:9090/. This can be accessed from the browser.
-~~~
-* If the server is not accessible from outside/browser, you can use the following end points to see the list of registered metrics and errors.
-~~~
-    #Get the stats
-    curl http://localhost:9090/api/stats
-    #Get the registered metrics
-    curl http://localhost:9090/api/metric-paths
-~~~
-* You can make the changes to config.yml and validate it from the browser or the API
-* Once the configuration is complete, you can kill the workbench and start the Machine Agent
+For any support related questions, you can also contact help@appdynamics.com.
 
 
+## Contributing
 
-## Support
+Always feel free to fork and contribute any changes directly here on [GitHub](https://github.com/Appdynamics/tibco-ems-monitoring-extension).
 
-For any questions or feature requests, please contact the [AppDynamics Center 
-of Excellence][].
-
-**Version:** 3.0.1
-**Controller Compatibility:** 4.5 or later  
-**Agent Compatibility:** 4.5 or later 
-**Last Updated:** 08-Feb-2021
-
-------------------------------------------------------------------------------
-
-## Release Notes
-
-### Version 3.0.1
-  - Updated to latest version of commons.
-
-### Version 3.0.0
-  - Ported to latest extension commons
-  - Added fault tolerent server configuration
-  - Added configuration to include destinations.
-  - Added configuration to add/remove metrics in metrics.xml
-  - Removed dynamic connection metrics which are creting stale metrics and moved these metrics to respected Queue/Topic.
-### Version 2.4.2
-  - Revamped to support new extension framework
-  - Added support for multiple EMS servers
-  - Moved configuration to config.yml file
-  - Display name can be null or empty
-  
-### Version 2.4.1.3
-  - Encryption support for sslIdentityPassword
-  - Adding additional metrics for Server, Route and Queue  
-  
-### Version 2.3.7
-  - Added missing `commons-lang.jar` to classpath.
-
-### Version 2.3.6
-  - Changed logging level in shouldMonitorDestination() from `INFO` to `DEBUG`.
-
-### Version 2.3.5
-  - Adds new SSL configuration properties: `sslIdentityFile`, `sslIdentityPassword`, `sslTrustedCerts`, 
-    `sslIssuerCerts`, `sslDebug`, `sslVendor`, `sslVerifyHost`, `sslVerifyHostName`. 
-    Please check the `monitor.xml` bundled with this release for details.
-
-### Version 2.3.4
-  - Adding support for SSL and topics.
-
-### Version 2.3.2
-  - Added new derived metrics: InboundMessagesPerMinute, OutboundMessagesPerMinute, 
-    InboundBytesPerMinute, and OutboundBytesPerMinute.
-  - General cleanup of code.
-
-### Version 2.3.1
-  - Added `queuesToExclude` option to configuration.
-
-### Version 2.3
-  - Added protocol (tcp/ssl) option to configuration.
-
-### Version 2.2.1
-  - Recompiled for target JDK 1.5.
-
-### Version 2.2.0
-  - Cleaned up directory structure.
-  - Rebuilt Ant scripts.
-  
-
-[AppDynamics Center of Excellence]: mailto:help@appdynamics.com
-[help@appdynamics.com]: mailto:help@appdynamics.com
+## Version
+|          Name            |  Version   |
+|--------------------------|------------|
+|Extension Version         |3.0.1       |
+|Controller Compatibility  |4.5 or Later|
+|Machine Agent Version     |4.5 or Later|
+|Last Update               |08/02/2021  |
