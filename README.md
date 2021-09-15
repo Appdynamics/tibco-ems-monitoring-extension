@@ -16,7 +16,9 @@ This extension requires the Java Machine Agent.
 
 ## Prerequisites
 
-Before starting this monitor, make sure your EMS server is configured to report 
+1. Before the extension is installed, the prerequisites mentioned [here](https://community.appdynamics.com/t5/Knowledge-Base/Extensions-Prerequisites-Guide/ta-p/35213) need to be met. Please do not proceed with the extension installation if the specified prerequisites are not met.
+
+2. Before starting this monitor, make sure your EMS server is configured to report 
 statistics. You can do this by editing the file `tibemsd.conf` in your 
 `TIBCO_HOME`, or by using the `tibemsadmin` command line utility.
 
@@ -54,13 +56,14 @@ Use the `tibemsadmin` utility to change the server configuration.
 
 ## Installation
 
-1. Download TibcoEMSMonitor.zip from the Community.
-2. Copy TibcoEMSMonitor.zip into the directory where you installed the machine 
-   agent, under `$MACHINE_AGENT_HOME/monitors`.
-3. Unzip the file. This will create a new directory called `TibcoEMSMonitor`.
-4. In `$MACHINE_AGENT_HOME/monitors/TibcoEMSMonitor`, edit the file `config.yml` and 
-   configure the extension for your Tibco EMS installation.
-5. Add the following Tibco EMS jars, tibcrypt.jar, tibemsd_sec.jar, tibjms.jar, tibjmsadmin.jar, tibjmsapps.jar, tibjmsufo.jar, tibrvjms.jar to the lib folder   
+1. Run 'mvn clean install' from "TibcoEMSMonitorRepo"
+2. Unzip the `TibcoEMSMonitor-<VERSION>.zip` from `target` directory  into the "<MachineAgent_Dir>/monitors" directory.
+3. This will create a new directory called `TibcoEMSMonitor`.
+4. In `$MACHINE_AGENT_HOME/monitors/TibcoEMSMonitor`, edit the file `config.yml` and configure the extension for your Tibco EMS installation.
+5. Add the following Tibco EMS jars to the lib folder.<br/>
+```
+tibcrypt.jar, tibemsd_sec.jar, tibjms.jar, tibjmsadmin.jar, tibjmsapps.jar, tibjmsufo.jar, tibrvjms.jar  
+```
 6. Restart the machine agent.
 
 
@@ -137,7 +140,7 @@ displayDynamicIdsInMetricPath: false
 #metricPrefix: "Custom Metrics|Tibco EMS|"
 
 #This will create it in specific Tier aka Component. Replace <COMPONENT_ID>. Please make sure to have a trailing |.
-#To find out the COMPONENT_ID, please see the screen shot here https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
+#To find out the COMPONENT_ID, please see the screen shot here https://community.appdynamics.com/t5/Knowledge-Base/How-do-I-troubleshoot-missing-custom-metrics-or-extensions/ta-p/28695
 metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|Tibco EMS|"
  
  ```
@@ -204,7 +207,7 @@ All the metrics are configured in metrics.xml file. By default extension can col
 ## Caution
 
 This monitor can potentially register hundred of new metrics, depending on how 
-many queues are in EMS. By default, the Machine Agent will only report 200 
+many queues are in EMS. By default, the Machine Agent will only report 450 
 metrics to the controller, so you may need to increase that limit when 
 installing this monitor. To increase the metric limit, you must add a parameter 
 when starting the Machine Agent, like this:
@@ -228,6 +231,7 @@ Always feel free to fork and contribute any changes directly here on [GitHub](ht
 |          Name            |  Version   |
 |--------------------------|------------|
 |Extension Version         |3.0.1       |
-|Controller Compatibility  |4.5 or Later|
-|Machine Agent Version     |4.5 or Later|
 |Last Update               |08/02/2021  |
+|Changes list              |[ChangeLog](https://github.com/Appdynamics/tibco-ems-monitoring-extension/blob/master/CHANGELOG.md)|
+
+**Note**: While extensions are maintained and supported by customers under the open-source licensing model, they interact with agents and Controllers that are subject to [AppDynamics’ maintenance and support policy](https://docs.appdynamics.com/latest/en/product-and-release-announcements/maintenance-support-for-software-versions). Some extensions have been tested with AppDynamics 4.5.13+ artifacts, but you are strongly recommended against using versions that are no longer supported.
