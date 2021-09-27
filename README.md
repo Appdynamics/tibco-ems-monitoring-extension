@@ -18,7 +18,9 @@ This extension requires the Java Machine Agent.
 
 1. Before the extension is installed, the prerequisites mentioned [here](https://community.appdynamics.com/t5/Knowledge-Base/Extensions-Prerequisites-Guide/ta-p/35213) need to be met. Please do not proceed with the extension installation if the specified prerequisites are not met.
 
-2. Before starting this monitor, make sure your EMS server is configured to report 
+2. Download and install [Apache Maven](https://maven.apache.org/) which is configured with `Java 8` to build the extension artifact from source. You can check the java version used in maven using command `mvn -v` or `mvn --version`. If your maven is using some other java version then please download java 8 for your platform and set JAVA_HOME parameter before starting maven.
+
+3. Before starting this monitor, make sure your EMS server is configured to report 
 statistics. You can do this by editing the file `tibemsd.conf` in your 
 `TIBCO_HOME`, or by using the `tibemsadmin` command line utility.
 
@@ -55,16 +57,24 @@ Use the `tibemsadmin` utility to change the server configuration.
 
 
 ## Installation
-
-1. Run 'mvn clean install' from "TibcoEMSMonitorRepo"
-2. Unzip the `TibcoEMSMonitor-<VERSION>.zip` from `target` directory  into the "<MachineAgent_Dir>/monitors" directory.
-3. This will create a new directory called `TibcoEMSMonitor`.
-4. In `$MACHINE_AGENT_HOME/monitors/TibcoEMSMonitor`, edit the file `config.yml` and configure the extension for your Tibco EMS installation.
-5. Add the following Tibco EMS jars to the lib folder.<br/>
+1. Clone the "tibco-ems-monitoring-extension" repo using `git clone <repoUrl>` command.
+2. Create a `lib` folder in "tibco-ems-monitoring-extension" and copy the following jars in the `tibco-ems-monitoring-extension/lib` folder. (These jars are shipped with your Tibco EMS product itself)
+```
+        tibemsd_sec.jar
+        tibjms.jar
+        tibjmsadmin.jar
+        tibjmsapps.jar
+        tibrvjms.jar
+```        
+3. Run 'mvn clean install' from "tibco-ems-monitoring-extension"
+4. Unzip the `TibcoEMSMonitor-<VERSION>.zip` from `target` directory  into the "<MachineAgentHome_Dir>/monitors" directory.
+5. This will create a new directory called `TibcoEMSMonitor`.
+6. In `$MACHINE_AGENT_HOME/monitors/TibcoEMSMonitor`, edit the file `config.yml` and configure the extension for your Tibco EMS installation.
+7. Add the following Tibco EMS jars to the lib folder.<br/>
 ```
 tibcrypt.jar, tibemsd_sec.jar, tibjms.jar, tibjmsadmin.jar, tibjmsapps.jar, tibjmsufo.jar, tibrvjms.jar  
 ```
-6. Restart the machine agent.
+8. Restart the machine agent.
 
 
 ## Configuration
