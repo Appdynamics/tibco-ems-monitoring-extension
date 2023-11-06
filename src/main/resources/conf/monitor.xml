@@ -18,7 +18,7 @@
             <argument name="metric-file" is-required="true" default-value="monitors/TibcoEMSMonitor/metrics.xml"/>
         </task-arguments>
         <java-task>
-            <classpath>tibcoems-monitoring-extension.jar;lib/tibcrypt.jar;lib/tibemsd_sec.jar;lib/tibjms.jar;lib/tibjmsadmin.jar;lib/tibjmsapps.jar;lib/tibjmsufo.jar;lib/tibrvjms.jar</classpath>
+            <classpath>tibcoems-monitoring-extension.jar;lib/tibemsd_sec.jar;lib/tibjms.jar;lib/tibjmsadmin.jar;lib/tibrvjms.jar</classpath>
             <impl-class>com.appdynamics.extensions.tibco.TibcoEMSMonitor</impl-class>
         </java-task>
     </monitor-run-task>

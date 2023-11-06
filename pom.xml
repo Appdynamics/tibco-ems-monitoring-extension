@@ -58,13 +58,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/tibjmsadmin.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>tibco</groupId>
-            <artifactId>tibjmsapps</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/tibjmsapps.jar</systemPath>
-        </dependency>
         <!--<dependency>
             <groupId>tibco</groupId>
             <artifactId>tibjmsufo</artifactId>
