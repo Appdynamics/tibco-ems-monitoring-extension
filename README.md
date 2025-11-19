@@ -114,7 +114,7 @@ servers:
      # Supports tcp and ssl
      protocol: "tcp"
      #Add fault Tolerant servers for this server
-     faultTolerantServers: ["192.168.1.11:7222"]
+     faultTolerantServers: ["tcp://192.168.1.11:7222"]
      user: "admin"
      # password or encryptedPassword and encryptionKey are required
      password: "admin"
