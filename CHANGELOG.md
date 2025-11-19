@@ -1,3 +1,6 @@
+### Version 3.0.3
+* Corrected the format of faultTolerantServers in the configuration file
+* Updated the documentation to reflect the new faultTolerantServers format
 ### Version 3.0.2
 * Updated to latest version of commons (2.2.13).
 ### Version 3.0.1

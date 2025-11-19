@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.appdynamics.extensions</groupId>
     <artifactId>tibcoems-monitoring-extension</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <name>Tibco EMS Monitor</name>
     <description>Monitor Tibco EMS</description>
 
